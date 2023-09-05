@@ -14,6 +14,11 @@ import pynput.keyboard
 
 #from whisper_mic.utils import get_logger
 
+"""
+This code was taken from mallorbs's whisper_mic repo 
+**We did not write this**
+source: https://github.com/mallorbc/whisper_mic/tree/main
+"""
 
 class WhisperMic:
     def __init__(self,model="base",device=("cuda" if torch.cuda.is_available() else "cpu"),english=False,verbose=False,energy=300,pause=0.8,dynamic_energy=False,save_file=False, model_root="./whisper_model",mic_index=None):
