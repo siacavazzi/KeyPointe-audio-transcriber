@@ -6,6 +6,10 @@ mic = WhisperMic(english=True, model="small")
 Conversation.create_table()
 
 current_convo = Conversation()
+
+# gpt = mic.get_completion("hello")
+# print(gpt)
+
 while True:
     result = mic.listen()
     print(result)

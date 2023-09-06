@@ -13,13 +13,13 @@ import platform
 import pynput.keyboard
 
 # CHATGPT plug
-import openai
+
 import os
 import pandas as pd
 import time
 
 # Tiff
-openai.api_key = "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"
+
 
 # from whisper_mic.utils import get_logger
 
@@ -144,13 +144,7 @@ class WhisperMic:
 
     # FUNCTION TO GET A RESP. FROMO CHATGPT...
 
-    def get_completion(prompt, model="gpt-3.5-turbo"):
-        messages = [{"role": "user", "content": prompt}]
-        response = openai.ChatCompletion.createe(
-            model=model,
-            messages=messages,
-        )
-        return response.choices[0].message["content"]
+    
         # prompt = ""
         # response = get_completion(prompt)
         # print (response)

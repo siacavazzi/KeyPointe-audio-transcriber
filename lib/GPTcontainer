@@ -1,0 +1,13 @@
+import openai
+
+openai.api_key = "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"
+
+def get_completion(prompt, model="gpt-3.5-turbo"):
+        messages = [{"role": "user", "content": prompt}]
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=messages,
+        )
+        return response.choices[0].message["content"]
+
+
