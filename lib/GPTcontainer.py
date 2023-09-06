@@ -1,4 +1,5 @@
 import openai
+#from .conversation import Conversation
 
 openai.api_key = "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"
 

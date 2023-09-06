@@ -11,6 +11,8 @@ pandas = "*"
 pydub = "*"
 pynput = "*"
 pyaudio = "*"
+fuzzywuzzy = "*"
+python-levenshtein = "*"
 
 [dev-packages]
 
