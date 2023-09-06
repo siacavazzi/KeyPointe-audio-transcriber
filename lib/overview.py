@@ -8,7 +8,7 @@ class Overview:
         self.title = ""
         self.summary = ""
         self.id = id
-        self.time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        self.time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         Overview.create_overview_table()
 
     @classmethod
@@ -36,9 +36,8 @@ class Overview:
         self.id = CURSOR.lastrowid
         return self.id
         
-    def fetch_conversation(self, convo_id=None):
-        if convo_id is None:
-            convo_id = self.id
+    @classmethod
+    def fetch_conversation(cls, convo_id):
         query = "SELECT * FROM conversations WHERE convo_id = ?"
         rows = CURSOR.execute(query, [convo_id]).fetchall()
         return rows
@@ -63,6 +62,14 @@ class Overview:
         except:
             CURSOR.execute(query, ["Untitled", "Summary Missing", self.id])
         CONN.commit()
+
+    @classmethod
+    def fetch_overviews(cls, limit=25):
+        query = f"SELECT * FROM convo_overview LIMIT {limit}"
+
+        rows = CURSOR.execute(query).fetchall()
+
+        return rows
 
 
 

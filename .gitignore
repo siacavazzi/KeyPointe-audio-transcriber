@@ -3,3 +3,4 @@
 /whisper_model
 /lib/__pycache__
 __pycache__
+/lib/apiKey.py

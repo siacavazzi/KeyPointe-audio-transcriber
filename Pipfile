@@ -13,6 +13,8 @@ pynput = "*"
 pyaudio = "*"
 fuzzywuzzy = "*"
 python-levenshtein = "*"
+colorama = "*"
+prettytable = "*"
 
 [dev-packages]
 

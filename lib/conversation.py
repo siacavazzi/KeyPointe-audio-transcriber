@@ -10,6 +10,7 @@ class Conversation:
     def __init__(self):
         self.overview = Overview()
         self.conversation_id = self.overview.initialize_convo()
+        Conversation.create_table()
 
     # create reference in overview table with id
 
@@ -35,7 +36,7 @@ class Conversation:
 
 
     def add_row(self, content):
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        current_time = datetime.now().strftime('%H:%M:%S')
         query = """
         INSERT INTO conversations
         (time, convo_id, content) VALUES (?,?,?)
@@ -44,31 +45,49 @@ class Conversation:
         CONN.commit()
 
     @classmethod
-    def reset_table(cls):
-        query = "DROP TABLE conversations"
+    def reset_table(cls, table):
+        query = f"DROP TABLE {table}"
         CURSOR.execute(query)
         CONN.commit()
-        cls.create_table()
 
     def end_conversation(self):
         convo = self.overview.get_readable_conversation()
 
         prompt = """
-        "Provide a title and summary for the following conversation formatted as a Python dictionary with no other text. 
-         Your output should look like this with your text:
+        Provide a title and summary for the following transcript formatted as a Python dictionary with no other text. 
+        Keep in mind that the transcript may be imperfect.
+        Your output should look like this with your text:
         {
         'title': 'Placeholder Title',
         'summary': 'This is a placeholder summary.'
-        }" \n
+        } \n
         """ + convo
 
+        response = get_completion(prompt)
+
+
         try:
-            response = ast.literal_eval(get_completion(prompt))
+            titleSummary = ast.literal_eval(response)
         except:
-            response = None
+            titleSummary = None
         
-        self.overview.add_title_summary(response)
-        print(response)
+        self.overview.add_title_summary(titleSummary)
+
+
+    @classmethod
+    def reset_database(cls):
+        cls.reset_table("conversations")
+        cls.reset_table("convo_overview")
+
+    @classmethod
+    def delete_convo(cls, id):
+        query1 = "DELETE FROM conversations WHERE convo_id = ?"
+        query2 = "DELETE FROM convo_overview WHERE id = ?"
+        CURSOR.execute(query1, [id])
+        CURSOR.execute(query2, [id])
+        CONN.commit()
+
+
 
 
 
