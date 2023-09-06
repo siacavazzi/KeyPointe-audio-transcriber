@@ -7,8 +7,7 @@ Conversation.create_table()
 
 current_convo = Conversation()
 while True:
-    results = mic.listen()
-    print(results)
-    for result in results:
-        #current_convo.add_row(result)
-        pass
+    result = mic.listen()
+    print(result)
+    current_convo.add_row(result)
+ 

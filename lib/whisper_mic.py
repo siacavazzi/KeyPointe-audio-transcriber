@@ -34,6 +34,9 @@ class WhisperMic:
         self.keyboard = pynput.keyboard.Controller()
         self.speaker_mapping = {}
         self.next_speaker_label = 'A'
+        self.audio_buffer = bytearray()
+        self.buffer_length = 30 * 16000 * 2  # 30 seconds at 16kHz, 16-bit audio
+
 
         self.pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization",
                                     use_auth_token="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")
@@ -83,6 +86,15 @@ class WhisperMic:
 
     def preprocess(self, data):
         return torch.from_numpy(np.frombuffer(data, np.int16).flatten().astype(np.float32) / 32768.0)
+    
+    def add_to_buffer(self, new_audio):
+        self.audio_buffer.extend(new_audio)
+    
+    def trim_buffer(self):
+        if len(self.audio_buffer) > self.buffer_length:
+            self.audio_buffer = self.audio_buffer[-self.buffer_length:]
+
+
 
     def get_all_audio(self, min_time: float = -1.):
         audio = bytes()
@@ -163,31 +175,30 @@ class WhisperMic:
             return frames
 
 
-    # def listen(self, timeout: int = 3):
-    #     print("listening...")
-    #     audio_data = self.get_all_audio(timeout)
+    def listen(self, timeout: int = 3):
+        print("listening...")
+        audio_data = self.get_all_audio(timeout)
 
-    #     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
-    #         wf = wave.open(temp_wav.name, 'wb')
-    #         wf.setnchannels(1)
-    #         wf.setsampwidth(2)
-    #         wf.setframerate(16000)
-    #         wf.writeframes(audio_data)
-    #         wf.close()
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
+            wf = wave.open(temp_wav.name, 'wb')
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(16000)
+            wf.writeframes(audio_data)
+            wf.close()
 
-    #     diarization = self.pipeline(temp_wav.name)
-    #     # Transcribe each segment and combine with speaker labels
-    #     transcriptions = []
-    #     for track in diarization.itertracks(yield_label=True):
-    #         segment, speaker, *_ = track  # this will capture and ignore additional returned values
-    #         segment_data = self.extract_segment_from_audio(temp_wav.name, segment)
-    #         print("transcribing...")
-    #         self.transcribe(data=segment_data)
-    #         while True:
-    #             if not self.result_queue.empty():
-    #                 transcription = self.result_queue.get()
-    #                 transcriptions.append((speaker, transcription))
-    #                 break
+        
+        # Transcribe each segment and combine with speaker labels
+        transcriptions = []
+       
+            
+
+        self.transcribe(data=audio_data)
+        while True:
+             if not self.result_queue.empty():
+                transcription = self.result_queue.get()
+                return transcription
+
 
     
 
@@ -197,47 +208,58 @@ class WhisperMic:
 
     #     return transcriptions
 
-    def listen(self, timeout = 3):
-        audio_data = self.get_all_audio(timeout)
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
-            wf = wave.open(temp_wav.name, "wb")
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(16000)
-            wf.writeframes(audio_data)
-            wf.close()
+    # def listen(self, timeout = 3):
+    #     print("listening...")
+    #     BUFFER_DURATION = 30
+    #     audio_data = self.get_all_audio(timeout)
+    #     self.add_to_buffer(audio_data)  # Add new audio to the buffer
+    #     self.trim_buffer() 
 
-        try:
-            diarization = self.pipeline(temp_wav.name)
-        except Exception as e:
-            print(f"Error in diarization: {e}")
-            return None
+    #     combined_audio = self.audio_buffer + audio_data
 
-        results = {}
-        transcriptions = []
+    #     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
+    #         wf = wave.open(temp_wav.name, "wb")
+    #         wf.setnchannels(1)
+    #         wf.setsampwidth(2)
+    #         wf.setframerate(16000)
+    #         wf.writeframes(combined_audio)
+    #         wf.close()
 
-        for track in diarization.itertracks(yield_label=True):
-            segment, speaker, *_ = track  # this will capture and ignore additional returned values
-            segment_data = self.extract_segment_from_audio(temp_wav.name, segment)
-            print("transcribing...")
-            self.transcribe(data=segment_data)
-            print("transcribed")
-            while True:
-                if not self.result_queue.empty():
-                    transcription = self.result_queue.get()
-                    # Check if the speaker_id has been mapped before, if not assign the next available label
-                    if speaker not in self.speaker_mapping:
-                        self.speaker_mapping[speaker] = self.get_next_speaker_label()
+    #     try:
+    #         diarization = self.pipeline(temp_wav.name)
+    #     except Exception as e:
+    #         print(f"Error in diarization: {e}")
+    #         return None
 
-                    labeled_speaker = self.speaker_mapping[speaker]
-                    transcriptions.append((labeled_speaker, transcription))
-                    break
-            print("done with loop")
+    #     results = {}
+    #     transcriptions = []
 
-        for labeled_speaker, transcription in transcriptions:
-            results[labeled_speaker] = transcription
+    #     for track in diarization.itertracks(yield_label=True):
+    #         segment, speaker, *_ = track  # this will capture and ignore additional returned values
+    #         effective_buffer_duration = len(self.audio_buffer) / (16000 * 2)
+    #         print(f"Segment Start: {segment.start}, Effective Buffer: {effective_buffer_duration}, Timeout: {timeout}")
 
-        return results
+    #         if segment.start >= (effective_buffer_duration - timeout):
+    #             segment_data = self.extract_segment_from_audio(temp_wav.name, segment)
+    #             print("transcribing...")
+    #             self.transcribe(data=segment_data)
+    #             print("transcribed")
+    #             while True:
+    #                 if not self.result_queue.empty():
+    #                     transcription = self.result_queue.get()
+    #                     # Check if the speaker_id has been mapped before, if not assign the next available label
+    #                     if speaker not in self.speaker_mapping:
+    #                         self.speaker_mapping[speaker] = self.get_next_speaker_label()
+
+    #                     labeled_speaker = self.speaker_mapping[speaker]
+    #                     transcriptions.append((labeled_speaker, transcription))
+    #                     break
+ 
+
+    #     for labeled_speaker, transcription in transcriptions:
+    #         results[labeled_speaker] = transcription
+
+    #     return results
 
 
     
