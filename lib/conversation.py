@@ -2,13 +2,14 @@
 from lib import CONN, CURSOR
 from datetime import datetime
 from .overview import Overview
+from .GPTcontainer import get_completion
+import ast
 
 
 class Conversation:
     def __init__(self):
-        overview = Overview()
-
-        self.conversation_id = overview.initialize_convo()
+        self.overview = Overview()
+        self.conversation_id = self.overview.initialize_convo()
 
     # create reference in overview table with id
 
@@ -48,6 +49,27 @@ class Conversation:
         CURSOR.execute(query)
         CONN.commit()
         cls.create_table()
+
+    def end_conversation(self):
+        convo = self.overview.get_readable_conversation()
+
+        prompt = """
+        "Provide a title and summary for the following conversation formatted as a Python dictionary with no other text. 
+         Your output should look like this with your text:
+        {
+        'title': 'Placeholder Title',
+        'summary': 'This is a placeholder summary.'
+        }" \n
+        """ + convo
+
+        try:
+            response = ast.literal_eval(get_completion(prompt))
+        except:
+            response = None
+        
+        self.overview.add_title_summary(response)
+        print(response)
+
 
 
 
