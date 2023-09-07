@@ -14,8 +14,7 @@ class Menu:
     options1 = f"""
     1. Transcribe Conversation
     2. View Conversations
-    3. Reset Conversations
-    4. Exit
+    3. Exit
     """
     user_input = ''
  
@@ -29,8 +28,7 @@ class Menu:
             possible_inputs = {
                 "1": self.transcribe,
                 "2": self.view,
-                "3": self.reset,
-                "4": self.exit
+                "3": self.exit
             }
             print(self.options1)
             self.user_input = input(">>> ")
@@ -40,7 +38,7 @@ class Menu:
             else:
                 print(self.invalid)
 
-            if self.user_input == '4':
+            if self.user_input == '3':
                 break
 
     def transcribe(self):
