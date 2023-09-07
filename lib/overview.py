@@ -1,4 +1,4 @@
-from lib import CONN, CURSOR
+from lib.SQL import CONN, CURSOR
 from datetime import datetime
 
 
@@ -42,8 +42,9 @@ class Overview:
         rows = CURSOR.execute(query, [convo_id]).fetchall()
         return rows
     
-    def get_readable_conversation(self):
-        convo = self.fetch_conversation(self.id)
+    @classmethod
+    def get_readable_conversation(cls ,id):
+        convo = cls.fetch_conversation(id)
         print(convo)
         output = ''
         for row in convo:

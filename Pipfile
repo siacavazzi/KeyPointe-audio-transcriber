@@ -15,6 +15,9 @@ fuzzywuzzy = "*"
 python-levenshtein = "*"
 colorama = "*"
 prettytable = "*"
+sounddevice = "*"
+numpy = "*"
+wavio = "*"
 
 [dev-packages]
 
