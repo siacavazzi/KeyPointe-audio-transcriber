@@ -1,5 +1,5 @@
 import openai
-from .apiKey import key
+from lib.apiKey import key
 
 openai.api_key = key
 

@@ -1,8 +1,8 @@
 
-from lib import CONN, CURSOR
+from lib.SQL import CONN, CURSOR
 from datetime import datetime
-from .overview import Overview
-from .GPTcontainer import get_completion
+from lib.overview import Overview
+from lib.GPTcontainer import get_completion
 import ast
 
 
@@ -52,7 +52,7 @@ class Conversation:
 
     def end_conversation(self):
         print("ending convo")
-        convo = self.overview.get_readable_conversation()
+        convo = Overview.get_readable_conversation(self.overview.id)
 
         print(f"conversation: {convo}")
 
@@ -89,6 +89,11 @@ class Conversation:
         CURSOR.execute(query1, [id])
         CURSOR.execute(query2, [id])
         CONN.commit()
+
+    @classmethod
+    def export(cls, id):
+        pass
+
 
 
 
