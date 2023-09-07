@@ -54,12 +54,6 @@ class Transcriber:
             print("Loading...")
             self.conversation.end_conversation()
 
-# test = Transcriber()
-
-# threading.Thread(target=test.run_loop, daemon=True).start()
-# test.record_audio()
-    
-
 
 
 

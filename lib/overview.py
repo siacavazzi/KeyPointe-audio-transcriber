@@ -45,7 +45,6 @@ class Overview:
     @classmethod
     def get_readable_conversation(cls ,id):
         convo = cls.fetch_conversation(id)
-        print(convo)
         output = ''
         for row in convo:
             timestamp = row[1]
