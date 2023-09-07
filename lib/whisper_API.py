@@ -1,25 +1,28 @@
 import openai
-import speech_recognition as sr
+import sounddevice as sd
+import numpy as np
+import wavio
+import tempfile
+from .apiKey import key
 
 class Whisper_API:
 
-    def transcribe(self, timout=3):
-        pass
+    @classmethod
+    def transcribe(cls, timout=3):
+        openai.api_key = key
+        file = cls.record_audio(timout)
+        audio = open(file, "rb")
+        transcript = openai.Audio.transcribe("whisper-1", audio)
+        return transcript.text
 
 
-    def setup_mic(self, mic_index=None):
-        if mic_index is None:
-            pass  # self.logger.info("No mic index provided, using default")
-        self.source = sr.Microphone(sample_rate=16000, device_index=mic_index)
+    def record_audio(duration, samplerate=44100):
+        # Record audio for the specified duration
+        audio_data = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=1, dtype='int16')
+        sd.wait()
+        # Save the audio data to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
+            wavio.write(temp_wav.name, audio_data, samplerate)
+            return temp_wav.name
 
-        self.recorder = sr.Recognizer()
-        self.recorder.energy_threshold = self.energy
-        self.recorder.pause_threshold = self.pause
-        self.recorder.dynamic_energy_threshold = self.dynamic_energy
 
-        with self.source:
-            self.recorder.adjust_for_ambient_noise(self.source)
-
-        self.recorder.listen_in_background(
-            self.source, self.record_callback, phrase_time_limit=2)
-    
