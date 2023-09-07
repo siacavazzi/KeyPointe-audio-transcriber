@@ -2,7 +2,7 @@
 
 # KeyPointe Transcription Program
 ## Overview
-KeyPointe is a program designed to transcribe spoken words into written text using advanced audio processing technologies. The program enables users to record, transcribe, and manage transcribed conversations, storing them in a database for easy retrieval and management.
+KeyPointe is a program designed to transcribe spoken words into written text using the Whisper API. The program enables users to record, transcribe, manage transcribed conversations and export transcrips. Transcripts are stored in a database for easy retrieval and management.
 
 ## Modules & Features
 1. Core Modules
