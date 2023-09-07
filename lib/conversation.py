@@ -151,12 +151,16 @@ TRANSCRIPT (may contain errors):
         if raw_html:
             return html_text
        
+       
         document = Document()
         soup = BeautifulSoup(html_text, 'html.parser')
+
         for element in soup.body:
             if element.name and element.name.startswith('h') and element.name[1:].isdigit():
                 level = int(element.name[1:]) - 1
                 document.add_heading(element.text, level=level)
+                if level == 0:
+                    title = element.text
 
             elif element.name == 'p':
                 document.add_paragraph(element.text)
@@ -167,7 +171,7 @@ TRANSCRIPT (may contain errors):
                 for item in element.find_all('li'):
                     document.add_paragraph(item.text, style='ListNumber')
 
-        document.save(f"exports/Overview_for_convo_{id}.docx")
+        document.save(f"exports/{title}.docx")
         return None
 
 
