@@ -127,6 +127,12 @@ class Conversation:
     <!-- Add as many takeaways as needed. -->
 </ul>
 
+<!-- Notes for detailed summary: -->
+<!-- Include all essential information, such as vocabulary terms and key concepts -->
+<!-- Strictly base your notes on the provided information, without adding any external information. -->
+<h2>Detailed Summary</h2>
+<p>[create detailed notes about the transcript]</p>
+
 <!-- Optional: Only include the section below if there are action items -->
 <h2>Next Steps/Action Items</h2>
 <ul>
