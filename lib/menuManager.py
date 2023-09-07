@@ -72,7 +72,6 @@ class Menu:
                     print("Invalid Input")
 
             elif("export" in self.user_input.lower()):
-                # TODO export convos as files
                 try:
                     id = self.user_input.split(" ")[1]
                     if Menu.is_int(id):

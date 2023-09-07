@@ -92,6 +92,7 @@ class Conversation:
         CURSOR.execute(query2, [id])
         CONN.commit()
 
+    # note - set raw_html to True for HTML output. Call with html = Conversation.export(id, True)
     @classmethod
     def export(cls, id, raw_html=False):
         print("Exporting...")
