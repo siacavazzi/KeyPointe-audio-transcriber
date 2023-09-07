@@ -93,7 +93,7 @@ class Conversation:
         CONN.commit()
 
     @classmethod
-    def export(cls, id):
+    def export(cls, id, raw_html=False):
         print("Exporting...")
         convo = Overview.get_readable_conversation(id)
 
@@ -141,6 +141,9 @@ class Conversation:
 TRANSCRIPT (may contain errors):
         """ + convo
         html_text = get_completion(prompt)
+
+        if raw_html:
+            return html_text
        
         document = Document()
         soup = BeautifulSoup(html_text, 'html.parser')
@@ -158,7 +161,8 @@ TRANSCRIPT (may contain errors):
                 for item in element.find_all('li'):
                     document.add_paragraph(item.text, style='ListNumber')
 
-        document.save(f"Overview_for_convo_{id}.docx")
+        document.save(f"exports/Overview_for_convo_{id}.docx")
+        return None
 
 
 

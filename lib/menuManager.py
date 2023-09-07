@@ -75,13 +75,14 @@ class Menu:
 
             elif("export" in self.user_input.lower()):
                 # TODO export convos as files
-                #try:
-                id = self.user_input.split(" ")[1]
-                Conversation.export(id)
-
-                #except:
-
-                    #print("Invalid Input")
+                try:
+                    id = self.user_input.split(" ")[1]
+                    if Menu.is_int(id):
+                        Conversation.export(id)
+                    else:
+                        print(self.invalid)
+                except:
+                    print("Error exporting document")
 
             elif(Menu.is_int(self.user_input)):
                 convo_table = PrettyTable()
