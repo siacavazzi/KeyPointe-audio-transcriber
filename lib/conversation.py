@@ -1,9 +1,11 @@
 
-from lib import CONN, CURSOR
+from lib.SQL import CONN, CURSOR
 from datetime import datetime
-from .overview import Overview
-from .GPTcontainer import get_completion
+from lib.overview import Overview
+from lib.GPTcontainer import get_completion
+from bs4 import BeautifulSoup
 import ast
+from docx import Document
 
 
 class Conversation:
@@ -52,7 +54,7 @@ class Conversation:
 
     def end_conversation(self):
         print("ending convo")
-        convo = self.overview.get_readable_conversation()
+        convo = Overview.get_readable_conversation(self.overview.id)
 
         print(f"conversation: {convo}")
 
@@ -89,6 +91,86 @@ class Conversation:
         CURSOR.execute(query1, [id])
         CURSOR.execute(query2, [id])
         CONN.commit()
+
+    @classmethod
+    def export(cls, id, raw_html=False):
+        print("Exporting...")
+        convo = Overview.get_readable_conversation(id)
+
+
+        prompt = """
+        Given the following audio transcript, create an HTML document summarizing the transcript. Only respond with the HTML and no other text. Use the following formatting:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+</head>
+<body>
+
+<h1>[create an appropriate title for the transcript and insert it here]</h1>
+
+<p>[insert a one sentence summary of the transcript here]</p>
+
+<h2>Main Topics Discussed</h2>
+<ul>
+    <li>[Insert topic 1 here]</li>
+    <li>[Insert topic 2 here]</li>
+    <!-- Add as many topics as needed. -->
+</ul>
+
+<h2>Key Takeaways</h2>
+<ul>
+    <li>[Insert takeaway 1 here]</li>
+    <li>[Insert takeaway 2 here]</li>
+    <!-- Add as many takeaways as needed. -->
+</ul>
+
+<!-- Optional: Only include the section below if there are action items -->
+<h2>Next Steps/Action Items</h2>
+<ul>
+    <li>[Action 1]</li>
+    <li>[Action 2]</li>
+    <!-- Add as many actions as needed. -->
+</ul>
+
+</body>
+</html>
+
+TRANSCRIPT (may contain errors):
+        """ + convo
+        html_text = get_completion(prompt)
+
+        if raw_html:
+            return html_text
+       
+        document = Document()
+        soup = BeautifulSoup(html_text, 'html.parser')
+        for element in soup.body:
+            if element.name and element.name.startswith('h') and element.name[1:].isdigit():
+                level = int(element.name[1:]) - 1
+                document.add_heading(element.text, level=level)
+
+            elif element.name == 'p':
+                document.add_paragraph(element.text)
+            elif element.name == 'ul':
+                for item in element.find_all('li'):
+                    document.add_paragraph(item.text, style='ListBullet')
+            elif element.name == 'ol':
+                for item in element.find_all('li'):
+                    document.add_paragraph(item.text, style='ListNumber')
+
+        document.save(f"exports/Overview_for_convo_{id}.docx")
+        return None
+
+
+
+
+
+
+        
+
 
 
 

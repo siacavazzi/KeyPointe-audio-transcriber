@@ -3,15 +3,15 @@ import sounddevice as sd
 import numpy as np
 import wavio
 import tempfile
-from .apiKey import key
+from lib.apiKey import key
+import asyncio
 
 class Whisper_API:
 
     @classmethod
-    def transcribe(cls, timout=3):
+    async def get_transcript(cls, audio_file_path, timout=3):
         openai.api_key = key
-        file = cls.record_audio(timout)
-        audio = open(file, "rb")
+        audio = open(audio_file_path, "rb")
         transcript = openai.Audio.transcribe("whisper-1", audio)
         return transcript.text
 

@@ -1,13 +1,16 @@
-from .title import title
-from .transcribe import transcribe_speech as ts
+from lib.title import title
+from lib.transcribe import Transcriber
 from colorama import Fore
-from .overview import Overview
+from colorama import init
+from lib.overview import Overview
 import os
 from prettytable import PrettyTable
 from .conversation import Conversation
+import threading
 
 class Menu:
-    invalid = f"{Fore.RED} Invalid input. Please try again.{Fore.GREEN}"
+    init(autoreset=True)
+    invalid = f"{Fore.RED} Invalid input. Please try again."
     options1 = f"""
     1. Transcribe Conversation
     2. View Conversations
@@ -42,8 +45,12 @@ class Menu:
 
     def transcribe(self):
         os.system('clear')
-        ts()
+        transcriber = Transcriber()
 
+        transcription_thread = threading.Thread(target=transcriber.run_loop, daemon=True)
+        transcription_thread.start()
+        transcriber.record_audio()
+        
     def view(self):
         overview_table = PrettyTable()
         col_names = ["ID","Title","Summary", "Timestamp"]
@@ -55,7 +62,7 @@ class Menu:
         print(overview_table)
 
         while True:
-            print("Type X to go back, the convsation ID for more details or delete {id} to delete the conversation")
+            print("Type X to go back, the convsation ID for more details, delete {id} to delete the conversation or export {id} to export the conversation")
             self.user_input = input(">>> ")
 
             if("delete" in self.user_input.lower()):
@@ -66,18 +73,18 @@ class Menu:
                 except:
                     print("Invalid Input")
 
-
             elif("export" in self.user_input.lower()):
                 # TODO export convos as files
-
                 try:
                     id = self.user_input.split(" ")[1]
-                    
-                
+                    if Menu.is_int(id):
+                        Conversation.export(id)
+                    else:
+                        print(self.invalid)
                 except:
-                    print("Invalid Input")
+                    print("Error exporting document")
 
-            elif(self.user_input != 'x'):
+            elif(Menu.is_int(self.user_input)):
                 convo_table = PrettyTable()
                 convo_table.field_names = ["Timestamp", "Text"]
                 convo = Overview.fetch_conversation(int(self.user_input))
@@ -98,6 +105,14 @@ class Menu:
 
     def exit(self):
         pass
+
+    @classmethod    
+    def is_int(cls, string):
+        try:
+            int(string)
+            return True
+        except ValueError:
+            return False
 
     
 
