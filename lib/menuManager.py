@@ -62,7 +62,7 @@ class Menu:
         print(overview_table)
 
         while True:
-            print("Type X to go back, the convsation ID for more details or delete {id} to delete the conversation")
+            print("Type X to go back, the convsation ID for more details, delete {id} to delete the conversation or export {id} to export the conversation")
             self.user_input = input(">>> ")
 
             if("delete" in self.user_input.lower()):
