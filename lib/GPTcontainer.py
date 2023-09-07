@@ -4,7 +4,8 @@ from .apiKey import key
 openai.api_key = key
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
-        messages = [{"role": "user", "content": prompt}]
+        print(prompt)
+        messages = [{"role": "system", "content": prompt}]
         response = openai.ChatCompletion.create(
             model=model,
             messages=messages,

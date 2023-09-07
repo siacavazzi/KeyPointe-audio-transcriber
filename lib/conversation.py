@@ -51,7 +51,10 @@ class Conversation:
         CONN.commit()
 
     def end_conversation(self):
+        print("ending convo")
         convo = self.overview.get_readable_conversation()
+
+        print(f"conversation: {convo}")
 
         prompt = """
         Provide a title and summary for the following transcript formatted as a Python dictionary with no other text. 

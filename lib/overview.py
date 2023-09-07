@@ -42,8 +42,9 @@ class Overview:
         rows = CURSOR.execute(query, [convo_id]).fetchall()
         return rows
     
-    def get_readable_conversation(self, convo_id=None):
-        convo = self.fetch_conversation(convo_id)
+    def get_readable_conversation(self):
+        convo = self.fetch_conversation(self.id)
+        print(convo)
         output = ''
         for row in convo:
             timestamp = row[1]

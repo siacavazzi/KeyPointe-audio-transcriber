@@ -77,7 +77,7 @@ class Menu:
                 except:
                     print("Invalid Input")
 
-            elif(isinstance(self.user_input, int)):
+            elif(self.user_input != 'x'):
                 convo_table = PrettyTable()
                 convo_table.field_names = ["Timestamp", "Text"]
                 convo = Overview.fetch_conversation(int(self.user_input))
