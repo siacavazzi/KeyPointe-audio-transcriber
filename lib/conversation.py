@@ -147,6 +147,7 @@ class Conversation:
 
 TRANSCRIPT (may contain errors):
         """ + convo
+        
         html_text = get_completion(prompt)
 
         if raw_html:
@@ -171,6 +172,14 @@ TRANSCRIPT (may contain errors):
             elif element.name == 'ol':
                 for item in element.find_all('li'):
                     document.add_paragraph(item.text, style='ListNumber')
+                    
+        document.add_heading("Transcript", level=1)
+        trancript = Overview.get_readable_conversation(id)
+        text = trancript.split("\n")
+        for line in text:
+            document.add_paragraph(line)
+
+        print(f"@@ {text}")
 
         document.save(f"exports/{title}.docx")
         return None

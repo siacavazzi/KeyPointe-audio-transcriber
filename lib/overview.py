@@ -48,8 +48,7 @@ class Overview:
         output = ''
         for row in convo:
             timestamp = row[1]
-            time = timestamp[11:19]
-            output += f"{time}:{row[3]}\n" 
+            output += f"{timestamp}:{row[3]}\n" 
         return output
     
     def add_title_summary(self, data):

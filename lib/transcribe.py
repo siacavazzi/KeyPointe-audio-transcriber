@@ -3,7 +3,6 @@ from lib.conversation import Conversation
 from fuzzywuzzy import fuzz
 import asyncio
 import queue
-import threading
 
 class Transcriber:  
     def __init__(self):
