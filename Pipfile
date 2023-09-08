@@ -18,6 +18,9 @@ prettytable = "*"
 sounddevice = "*"
 numpy = "*"
 wavio = "*"
+pyth = "*"
+beautifulsoup4 = "*"
+python-docx = "*"
 
 [dev-packages]
 

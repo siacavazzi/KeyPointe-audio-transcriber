@@ -14,8 +14,7 @@ class Menu:
     options1 = f"""
     1. Transcribe Conversation
     2. View Conversations
-    3. Reset Conversations
-    4. Exit
+    3. Exit
     """
     user_input = ''
  
@@ -29,8 +28,7 @@ class Menu:
             possible_inputs = {
                 "1": self.transcribe,
                 "2": self.view,
-                "3": self.reset,
-                "4": self.exit
+                "3": self.exit
             }
             print(self.options1)
             self.user_input = input(">>> ")
@@ -40,7 +38,7 @@ class Menu:
             else:
                 print(self.invalid)
 
-            if self.user_input == '4':
+            if self.user_input == '3':
                 break
 
     def transcribe(self):
@@ -62,7 +60,7 @@ class Menu:
         print(overview_table)
 
         while True:
-            print("Type X to go back, the convsation ID for more details or delete {id} to delete the conversation")
+            print("Type X to go back, the convsation ID for more details, delete {id} to delete the conversation or export {id} to export the conversation")
             self.user_input = input(">>> ")
 
             if("delete" in self.user_input.lower()):
@@ -74,14 +72,14 @@ class Menu:
                     print("Invalid Input")
 
             elif("export" in self.user_input.lower()):
-                # TODO export convos as files
-
                 try:
                     id = self.user_input.split(" ")[1]
-                    
-                
+                    if Menu.is_int(id):
+                        Conversation.export(id)
+                    else:
+                        print(self.invalid)
                 except:
-                    print("Invalid Input")
+                    print("Error exporting document")
 
             elif(Menu.is_int(self.user_input)):
                 convo_table = PrettyTable()
