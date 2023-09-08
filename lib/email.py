@@ -7,15 +7,24 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from dotenv import load_dotenv
 import base64
 import os
+
+
+load_dotenv('.env')
+credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
+if not credentials_path:
+    raise ValueError("GOOGLE_CREDENTIALS_PATH not found in .env")
+
 
 class EmailSender:
     def __init__(self):
         self.credentials = service_account.Credentials.from_service_account_file(
-            '/Users/tiffanypretlow/Development/code/phase-3/phase-3-project/audio_transcriber/tensile-runway-398315-79d1699d24be.json',
+            os.getenv("GOOGLE_CREDENTIALS_PATH"),
             scopes=['https://www.googleapis.com/auth/gmail.send']
         )
+
         self.service = build('gmail', 'v1', credentials=self.credentials)
 
     def send_email(self, sender, to, subject, message_text, attachment_path=None, html_content=None):
@@ -33,11 +42,11 @@ class EmailSender:
             message.attach(html_part)
 
         if attachment_path:
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload(open(attachment_path, 'rb').read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
-            message.attach(part)
+            with open(attachment_path, 'rb') as file:
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload(file.read())
+                part.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
+                message.attach(part)
 
         return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
