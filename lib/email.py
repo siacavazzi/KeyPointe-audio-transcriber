@@ -1,4 +1,4 @@
-from conversation import Conversation
+from .conversation import Conversation
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from bs4 import BeautifulSoup
@@ -12,16 +12,19 @@ import base64
 import os
 
 
-load_dotenv('.env')
-credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
-if not credentials_path:
-    raise ValueError("GOOGLE_CREDENTIALS_PATH not found in .env")
+
+
 
 
 class EmailSender:
     def __init__(self):
+        load_dotenv('.env')
+        path = "GOOGLE_CREDENTIALS_PATH"
+        credentials_path = os.getenv(path)
+        if not credentials_path:
+            raise ValueError("GOOGLE_CREDENTIALS_PATH not found in .env")
         self.credentials = service_account.Credentials.from_service_account_file(
-            os.getenv("GOOGLE_CREDENTIALS_PATH"),
+            os.getenv(path),
             scopes=['https://www.googleapis.com/auth/gmail.send']
         )
 
@@ -34,6 +37,7 @@ class EmailSender:
     def create_message(self, sender, to, subject, message_text, attachment_path=None, html_content=None):
         message = MIMEMultipart()
         message['to'] = to
+        message['from'] = sender
         message['subject'] = subject
         message.attach(MIMEText(message_text, 'plain'))
 
@@ -69,11 +73,11 @@ class EmailSender:
         return input("Enter receiver email: ")
 
     def send_transcript_summary(self):
-        id = self.get_latest_conversation_id()
+        id = 27
         sender_email = self.get_sender_email()
         receiver_email = self.get_receiver_email()
         html_content = Conversation.export(id, raw_html=True)
-        self.send_email(sender_email, receiver_email, "Transcript Summary", None, None, html_content)
+        self.send_email(sender_email, receiver_email, "Transcript Summary", " ", html_content=html_content)
 
 if __name__ == "__main__":
     email_sender = EmailSender()

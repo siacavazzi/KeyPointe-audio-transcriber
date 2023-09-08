@@ -21,6 +21,10 @@ wavio = "*"
 pyth = "*"
 beautifulsoup4 = "*"
 python-docx = "*"
+google-auth = "*"
+google-auth-httplib2 = "*"
+google-api-python-client = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

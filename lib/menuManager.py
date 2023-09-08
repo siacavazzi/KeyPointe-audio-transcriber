@@ -7,14 +7,17 @@ import os
 from prettytable import PrettyTable
 from .conversation import Conversation
 import threading
+from lib.email import EmailSender
 
 class Menu:
     init(autoreset=True)
     invalid = f"{Fore.RED} Invalid input. Please try again."
     options1 = f"""
+    ---------Options----------
     1. Transcribe Conversation
     2. View Conversations
     3. Exit
+    --------------------------
     """
     user_input = ''
  
@@ -43,7 +46,7 @@ class Menu:
 
     def transcribe(self):
         os.system('clear')
-        transcriber = Transcriber()
+        transcriber = Transcriber(timout=5)
 
         transcription_thread = threading.Thread(target=transcriber.run_loop, daemon=True)
         transcription_thread.start()
@@ -56,6 +59,8 @@ class Menu:
         overview_table.max_width["Summary"] = 75
         overviews = Overview.fetch_overviews()
         for overview in overviews:
+            overview = list(overview)
+            overview[2] = "----------------------\n"+overview[2]
             overview_table.add_row(overview)
         print(overview_table)
 
@@ -80,6 +85,10 @@ class Menu:
                         print(self.invalid)
                 except:
                     print("Error exporting document")
+            
+            elif("email" in self.user_input.lower()):
+                email = EmailSender()
+                email.send_transcript_summary()
 
             elif(Menu.is_int(self.user_input)):
                 convo_table = PrettyTable()

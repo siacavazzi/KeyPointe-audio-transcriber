@@ -64,8 +64,11 @@ class Overview:
         CONN.commit()
 
     @classmethod
-    def fetch_overviews(cls, limit=25):
-        query = f"SELECT * FROM convo_overview LIMIT {limit}"
+    def fetch_overviews(cls, limit=None):
+        if limit is not None:
+            query = f"SELECT * FROM convo_overview LIMIT {limit}"
+        else:
+            query = f"SELECT * FROM convo_overview"
 
         rows = CURSOR.execute(query).fetchall()
 

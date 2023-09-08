@@ -53,18 +53,19 @@ class Conversation:
         CONN.commit()
 
     def end_conversation(self):
-        print("ending convo")
         convo = Overview.get_readable_conversation(self.overview.id)
-
-        print(f"conversation: {convo}")
 
         prompt = """
         Provide a title and summary for the following transcript formatted as a Python dictionary with no other text. 
-        Keep in mind that the transcript may be imperfect.
-        Your output should look like this with your text:
+        Ignore any phrases in the transcript similar to the following:
+        - "thanks for watching"
+        - "like and subscribe"
+        - "end transcription" 
+
+        Your output should only consist of the following python dictionary with your inputs and nothing else:
         {
-        'title': 'Placeholder Title',
-        'summary': 'This is a placeholder summary.'
+        'title': 'Input Your title here',
+        'summary': 'Input your summary here'
         } \n
         """ + convo
 
@@ -128,6 +129,14 @@ class Conversation:
     <!-- Add as many takeaways as needed. -->
 </ul>
 
+<!-- Optional but encouraged -->
+<h2>Notable Quotes</h2>
+<ul>
+    <li>[Insert notable quote 1 here]</li>
+    <li>[Insert notable quote 2 here]</li>
+    <!-- Add as many takeaways as needed. -->
+</ul>
+
 <!-- Notes for detailed summary: -->
 <!-- Include all essential information, such as vocabulary terms and key concepts -->
 <!-- Strictly base your notes on the provided information, without adding any external information. -->
@@ -145,7 +154,7 @@ class Conversation:
 </body>
 </html>
 
-TRANSCRIPT (may contain errors):
+TRANSCRIPT (ignore anything simiar to "thanks for watching" as this is an error):
         """ + convo
         
         html_text = get_completion(prompt)
@@ -178,8 +187,6 @@ TRANSCRIPT (may contain errors):
         text = trancript.split("\n")
         for line in text:
             document.add_paragraph(line)
-
-        print(f"@@ {text}")
 
         document.save(f"exports/{title}.docx")
         return None
