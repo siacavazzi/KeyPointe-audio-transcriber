@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2db7803eda78b55f4f0219d2a8123f9f6c522e0ebeee6512a83c6ff3e0986875"
+            "sha256": "ff2a5a046c1a20a1564bcf0fe5fb22931faa95059f84f03904f45ce20fce3a0f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -448,6 +448,15 @@
             ],
             "index": "pypi",
             "version": "==0.1.0"
+        },
+        "google-auth-oauthlib": {
+            "hashes": [
+                "sha256:95880ca704928c300f48194d1770cf5b1462835b6e49db61445a520f793fd5fb",
+                "sha256:e375064964820b47221a7e1b7ee1fd77051b6323c3f9e3e19785f78ab67ecfc5"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.6'",
+            "version": "==1.0.0"
         },
         "googleapis-common-protos": {
             "hashes": [
@@ -951,6 +960,14 @@
             "markers": "python_version >= '3.8'",
             "version": "==1.24.4"
         },
+        "oauthlib": {
+            "hashes": [
+                "sha256:8139f29aac13e25d502680e9e19963e83f16838d48a0d71c287fe40e7067fbca",
+                "sha256:9859c40929662bec5d64f34d01c99e093149682a3f38915dc0655d5a633dd918"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==3.2.2"
+        },
         "openai": {
             "hashes": [
                 "sha256:417b78c4c2864ba696aedaf1ccff77be1f04a581ab1739f0a56e0aae19e5a794",
@@ -1389,6 +1406,14 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==2.31.0"
+        },
+        "requests-oauthlib": {
+            "hashes": [
+                "sha256:2577c501a2fb8d05a304c09d090d6e47c306fef15809d102b327cf8364bddab5",
+                "sha256:75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==1.3.1"
         },
         "rsa": {
             "hashes": [

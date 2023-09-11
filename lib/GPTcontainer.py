@@ -3,7 +3,7 @@ from lib.apiKey import key
 
 openai.api_key = key
 
-def get_completion(prompt, model="gpt-3.5-turbo"):
+def get_completion(prompt, model="gpt-3.5-turbo-16k"):
         messages = [{"role": "system", "content": prompt}]
         response = openai.ChatCompletion.create(
             model=model,
