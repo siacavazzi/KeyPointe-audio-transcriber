@@ -10,6 +10,10 @@ from email import encoders
 from dotenv import load_dotenv
 import base64
 import os
+import os.path
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 
 
 
@@ -18,17 +22,37 @@ import os
 
 class EmailSender:
     def __init__(self):
-        load_dotenv('.env')
-        path = "GOOGLE_CREDENTIALS_PATH"
-        credentials_path = os.getenv(path)
-        if not credentials_path:
-            raise ValueError("GOOGLE_CREDENTIALS_PATH not found in .env")
-        self.credentials = service_account.Credentials.from_service_account_file(
-            os.getenv(path),
-            scopes=['https://www.googleapis.com/auth/gmail.send']
-        )
+        self.scopes=['https://www.googleapis.com/auth/gmail.send']
+        creds = None
+        if os.path.exists('token.json'):
+            creds = Credentials.from_authorized_user_file('token.json')
+
+        # If there are no (valid) credentials available, prompt the user to log in.
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+            'credentials.json', self.scopes)
+                creds = flow.run_local_server(port=0)
+                # Save the credentials for the next run
+                with open('token.json', 'w') as token:
+                    token.write(creds.to_json())
+        
+
+        # load_dotenv('.env')
+        # path = "GOOGLE_CREDENTIALS_PATH"
+        # credentials_path = os.getenv(path)
+        # if not credentials_path:
+        #     raise ValueError("GOOGLE_CREDENTIALS_PATH not found in .env")
+        # self.credentials = service_account.Credentials.from_service_account_file(
+        #     os.getenv(path),
+        #     scopes=['https://www.googleapis.com/auth/gmail.send']
+        # )
 
         self.service = build('gmail', 'v1', credentials=self.credentials)
+
+
 
     def send_email(self, sender, to, subject, message_text, attachment_path=None, html_content=None):
         message = self.create_message(sender, to, subject, message_text, attachment_path, html_content)
@@ -37,7 +61,6 @@ class EmailSender:
     def create_message(self, sender, to, subject, message_text, attachment_path=None, html_content=None):
         message = MIMEMultipart()
         message['to'] = to
-        message['from'] = sender
         message['subject'] = subject
         message.attach(MIMEText(message_text, 'plain'))
 
