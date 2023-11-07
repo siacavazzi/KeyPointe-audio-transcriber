@@ -13,7 +13,7 @@ overview: Handles summaries of each conversation, providing a quick overview.
 prettytable: Enables structured table displays in the CLI.
 conversation: Provides functionality to manage and interface with the SQLite database storing conversations.
 2. WhisperMic
-This is an integral part of KeyPointe, interfacing with the microphone and transcribing user's speech:
+This is an integral part of KeyPointe, interfacing with the microphone and transcribing the user's speech:
 
 ## Setup
 
